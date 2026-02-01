@@ -21,6 +21,8 @@
 - [nianshu2022/Uptime-Monitor: 基于 Cloudflare Workers + D1 构建的轻量级网站监控系统。支持 SSL/域名过期检测、钉钉报警、自定义状态页。](https://github.com/nianshu2022/Uptime-Monitor) 
 - [upptime/upptime: ⬆️ GitHub Actions uptime monitor & status page by @AnandChowdhary](https://github.com/upptime/upptime) 
 - [songquanpeng/stats-cards: 在 README 中展示你在知乎，GitHub，B 站，LeetCode，掘金，CSDN，牛客等网站的数据，也可用于服务状态监控. Show your LeetCode & GitHub stats in GitHub Profile.](https://github.com/songquanpeng/stats-cards)
+- [lyc8503/UptimeFlare: ✔ Free and serverless uptime monitoring / status page on Cloudflare Workers, with Geo-specific checks](https://github.com/lyc8503/UptimeFlare) 
+
 
 - [不蒜子 - 极简网页计数器](https://busuanzi.ibruce.info/)
 - [自建不蒜子 - 网站访问量统计](https://busuanzi.9420.ltd/)
