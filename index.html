@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Uptime Status</title>
+  <style>
+    * {
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      font-size: 14px;
+      line-height: 1;
+      color: #131a26;
+      background-color: #f5f5f5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    #header {
+      background-color: #121a26;
+      padding: 30px 0 60px 0;
+      color: #3bd672;
+      width: 100%;
+    }
+
+    #header .container {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    #header .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #header .navi {
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    #header .navi a {
+      margin-left: 20px;
+      transition: color ease 150ms;
+    }
+
+    #header .navi a:hover {
+      color: #3bd672;
+    }
+
+    #uptime {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      margin-top: -30px;
+      margin-bottom: 40px;
+      padding: 15px 0;
+      overflow: hidden;
+    }
+
+    .site {
+      border-bottom: 1px solid #e6e7e8;
+      margin: 0 30px;
+      padding: 25px 0;
+    }
+
+    .site:last-child {
+      border-bottom: none;
+    }
+
+    .loading {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'%3E%3Cpath fill='%23D6D8D8' d='M19.52 42.712c9.897 2.916 20.285-2.743 23.201-12.64l-3.902-1.15c-2.281 7.742-10.407 12.17-18.15 9.888l-1.15 3.902z'%3E%3CanimateTransform attributeType='xml' attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='0.6s' repeatCount='indefinite'/%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      display: block;
+      margin: 0 auto;
+      width: 40px;
+      height: 40px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: baseline;
+    }
+
+    .meta .name {
+      font-size: 16px;
+    }
+
+    .meta .link {
+      background-image: url("data:image/svg+xml,%3Csvg class='icon' viewBox='0 0 1036 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M600.818 697.6c-70.4 0-134.4-25.6-192-76.8-25.6-25.6-25.6-64-6.4-89.6 25.6-25.6 64-25.6 89.6-6.4 57.6 51.2 147.2 51.2 198.4 0l166.4-166.4c25.6-25.6 38.4-64 38.4-102.4 0-25.6-6.4-64-38.4-96-57.6-51.2-147.2-51.2-198.4 0l-64 76.8c-25.6 25.6-64 25.6-89.6 0-25.6-25.6-25.6-64 0-89.6l70.4-70.4c102.4-102.4 268.8-102.4 377.6 0 51.2 51.2 83.2 115.2 83.2 192 0 70.4-25.6 134.4-76.8 192l-166.4 166.4c-57.6 44.8-121.6 70.4-192 70.4z' fill='%238492A6'/%3E%3Cpath d='M274.418 1024c-70.4 0-134.4-25.6-192-76.8-108.8-96-108.8-262.4-6.4-377.6l166.4-166.4c108.8-102.4 275.2-102.4 377.6 0 25.6 25.6 25.6 64 0 89.6s-64 25.6-89.6 0c-51.2-51.2-140.8-51.2-198.4 0l-166.4 166.4c-44.8 51.2-64 140.8 0 198.4 57.6 51.2 147.2 51.2 198.4 0l70.4-70.4c25.6-25.6 64-25.6 89.6 0s25.6 64 0 89.6l-70.4 70.4c-44.8 51.2-108.8 76.8-179.2 76.8z' fill='%238492A6'/%3E%3C/svg%3E");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      width: 13px;
+      height: 13px;
+      text-indent: -99999px;
+      margin-left: 8px;
+      opacity: 0.6;
+      transition: opacity ease 150ms;
+      display: inline-block;
+    }
+
+    .meta .link:hover {
+      opacity: 1;
+    }
+
+    .meta .status {
+      background-position: left center;
+      background-size: 14px auto;
+      background-repeat: no-repeat;
+      padding-left: 20px;
+      margin-left: auto;
+    }
+
+    .meta .status.ok {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 2l-8 8-4-4 1.5-1.5L4 7 10.5.5 12 2z' fill='%233bd672'/%3E%3C/svg%3E");
+      color: #3bd672;
+    }
+
+    .meta .status.down {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1064 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M205.09 959.373l327.82-327.83 327.827 327.83L981.31 838.79 653.49 510.97l327.82-327.814L860.737 62.58 532.91 390.4 205.09 62.581 84.527 183.155l327.82 327.814-327.82 327.82z' fill='%23DE484A'/%3E%3C/svg%3E");
+      color: #de484a;
+    }
+
+    .meta .status.unknow {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M521.216 164.864c161.792 0 199.68 149.504 106.496 242.688C523.264 512 441.344 532.48 441.344 749.568h158.72c1.024-123.904 62.464-182.272 125.952-239.616 58.368-53.248 120.832-99.328 120.832-206.848 0-171.008-159.744-292.864-325.632-292.864-187.392 0-344.064 132.096-344.064 316.416h158.72c0-92.16 92.16-161.792 185.344-161.792M441.344 855.04h158.72v158.72h-158.72V855.04z' fill='%23969ea8'/%3E%3C/svg%3E");
+      color: #969ea8;
+    }
+
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      margin: 15px 0 10px 0;
+    }
+
+    .timeline i {
+      flex-grow: 1;
+      margin: 0 1px;
+      height: 25px;
+      border-radius: 5px;
+      transition: opacity ease 150ms;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .timeline i.ok {
+      background-color: #3bd672;
+    }
+
+    .timeline i.down {
+      background-color: #de484a;
+    }
+
+    .timeline i.none {
+      background-color: #e5e8eb;
+    }
+
+    .timeline i:hover {
+      opacity: 0.6;
+    }
+
+    .timeline i:first-child {
+      margin-left: 0;
+    }
+
+    .timeline i:last-child {
+      margin-right: 0;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      line-height: 15px;
+      color: #9aa2af;
+    }
+
+    #footer {
+      font-size: 12px;
+      text-align: center;
+      line-height: 25px;
+      color: #969ea8;
+      padding-bottom: 20px;
+    }
+
+    #footer a {
+      font-weight: bold;
+      color: #3bd672;
+    }
+
+    .tooltip {
+      position: fixed;
+      background-color: #222;
+      color: #fff;
+      padding: 6px 9px;
+      border-radius: 5px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 9999;
+      white-space: nowrap;
+      display: none;
+    }
+
+    .stats {
+      text-align: center;
+      margin-top: 20px;
+      color: #969ea8;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      #header .container {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #header .navi {
+        margin-top: 15px;
+      }
+
+      #header .navi a {
+        margin-left: 0;
+        margin-right: 20px;
+      }
+
+      .site {
+        margin: 0 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 配置 -->
+  <script>
+    window.Config = {
+      // 显示标题
+      SiteName: '网站状态检测',
+
+      // UptimeRobot Api Keys
+      // 支持 Monitor-Specific 和 Read-Only
+      ApiKeys: [
+        'ur2297151-9ba27903007a2ccf27540839',
+      ],
+
+      // 日志天数
+      CountDays: 90,
+
+      // 是否显示检测站点的链接
+      ShowLink: true,
+
+      // 导航栏菜单
+      Navi: [
+        {
+          text: '主页',
+          url: 'https://up.java666.cn'
+        },
+        {
+          text: 'GitHub',
+          url: 'https://github.com/geekyouth/uptime-status'
+        },
+        {
+          text: '导航',
+          url: 'https://home.java666.cn'
+        },
+      ],
+    };
+  </script>
+
+  <!-- Header -->
+  <div id="header">
+    <div class="container">
+      <h1 class="logo"></h1>
+      <div class="navi"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div id="uptime">
+      <div class="site">
+        <div class="loading"></div>
+      </div>
+    </div>
+    <div id="footer">
+      <p>基于 <a href="https://uptimerobot.com/" target="_blank">UptimeRobot</a> 接口制作，检测频率 5 分钟</p>
+      <p>&copy; 2020~2026  Version 1.0.0</p>
+    </div>
+    <div class="stats">
+      <script defer src="https://busuanzi.9420.ltd/js"></script>
+      本文总阅读量 <span id="busuanzi_page_pv" style="color: #50ebc4; font-weight: bold;"></span> 次&nbsp;&nbsp;&nbsp;&nbsp;
+      本文总访客量 <span id="busuanzi_page_uv" style="color: #03ec16; font-weight: bold;"></span> 人&nbsp;&nbsp;&nbsp;&nbsp;
+      本站总访问量 <span id="busuanzi_site_pv" style="color: #9775f5; font-weight: bold;"></span> 次&nbsp;&nbsp;&nbsp;&nbsp;
+      本站总访客数 <span id="busuanzi_site_uv" style="color: #e95faf; font-weight: bold;"></span> 人
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip" id="tooltip"></div>
+
+  <!-- 核心 JavaScript -->
+  <script>
+    // 日期处理函数（简化版 dayjs）
+    const dayjs = (function() {
+      function format(date, template) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return template
+          .replace('YYYY', year)
+          .replace('MM', month)
+          .replace('DD', day)
+          .replace('YYYYMMDD', year + month + day);
+      }
+
+      function unix(date) {
+        return Math.floor(date.getTime() / 1000);
+      }
+
+      function fromUnix(timestamp) {
+        return new Date(timestamp * 1000);
+      }
+
+      function subtract(date, num, unit) {
+        const result = new Date(date);
+        if (unit === 'day') {
+          result.setDate(result.getDate() - num);
+        }
+        return result;
+      }
+
+      function add(date, num, unit) {
+        const result = new Date(date);
+        if (unit === 'day') {
+          result.setDate(result.getDate() + num);
+        }
+        return result;
+      }
+
+      return {
+        format,
+        unix,
+        fromUnix,
+        subtract,
+        add
+      };
+    })();
+
+    // 辅助函数
+    function formatNumber(value) {
+      return (Math.floor(value * 100) / 100).toString();
+    }
+
+    function formatDuration(seconds) {
+      let s = parseInt(seconds);
+      let m = 0;
+      let h = 0;
+      if (s >= 60) {
+        m = parseInt(s / 60);
+        s = parseInt(s % 60);
+        if (m >= 60) {
+          h = parseInt(m / 60);
+          m = parseInt(m % 60);
+        }
+      }
+      let text = `${s} 秒`;
+      if (m > 0) text = `${m} 分 ${text}`;
+      if (h > 0) text = `${h} 小时 ${text}`;
+      return text;
+    }
+
+    // UptimeRobot API 调用
+    async function getMonitors(apikey, days) {
+      const dates = [];
+      const today = new Date(new Date().setHours(0, 0, 0, 0));
+      
+      for (let d = 0; d < days; d++) {
+        dates.push(dayjs.subtract(today, d, 'day'));
+      }
+
+      const ranges = dates.map((date) => {
+        const start = dayjs.unix(date);
+        const end = dayjs.unix(dayjs.add(date, 1, 'day'));
+        return `${start}_${end}`;
+      });
+      
+      const start = dayjs.unix(dates[dates.length - 1]);
+      const end = dayjs.unix(dayjs.add(dates[0], 1, 'day'));
+      ranges.push(`${start}_${end}`);
+
+      const postdata = {
+        api_key: apikey,
+        format: 'json',
+        logs: 1,
+        log_types: '1-2',
+        logs_start_date: start,
+        logs_end_date: end,
+        custom_uptime_ranges: ranges.join('-'),
+      };
+
+      try {
+        const response = await fetch('https://api.uptimerobot.com/v2/getMonitors', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postdata),
+        });
+
+        const data = await response.json();
+        if (data.stat !== 'ok') throw new Error(data.error?.message || 'API Error');
+
+        return data.monitors.map((monitor) => {
+          const rangeList = monitor.custom_uptime_ranges.split('-');
+          const average = formatNumber(rangeList.pop());
+          const daily = [];
+          const dateMap = {};
+
+          dates.forEach((date, index) => {
+            const dateKey = dayjs.format(date, 'YYYYMMDD');
+            dateMap[dateKey] = index;
+            daily[index] = {
+              date: date,
+              uptime: formatNumber(rangeList[index]),
+              down: { times: 0, duration: 0 },
+            };
+          });
+
+          const total = monitor.logs.reduce((total, log) => {
+            if (log.type === 1) {
+              const logDate = dayjs.fromUnix(log.datetime);
+              const dateKey = dayjs.format(logDate, 'YYYYMMDD');
+              total.duration += log.duration;
+              total.times += 1;
+              if (dateMap[dateKey] !== undefined) {
+                daily[dateMap[dateKey]].down.duration += log.duration;
+                daily[dateMap[dateKey]].down.times += 1;
+              }
+            }
+            return total;
+          }, { times: 0, duration: 0 });
+
+          const result = {
+            id: monitor.id,
+            name: monitor.friendly_name,
+            url: monitor.url,
+            average: average,
+            daily: daily,
+            total: total,
+            status: 'unknow',
+          };
+
+          if (monitor.status === 2) result.status = 'ok';
+          if (monitor.status === 9) result.status = 'down';
+          return result;
+        });
+      } catch (error) {
+        console.error('Error fetching monitors:', error);
+        return [];
+      }
+    }
+
+    // 渲染监控站点
+    function renderMonitors(monitors) {
+      const { CountDays, ShowLink } = window.Config;
+      const statusText = {
+        ok: '正常',
+        down: '无法访问',
+        unknow: '未知'
+      };
+
+      const uptimeContainer = document.getElementById('uptime');
+      uptimeContainer.innerHTML = '';
+
+      if (!monitors || monitors.length === 0) {
+        uptimeContainer.innerHTML = '<div class="site"><div class="loading"></div></div>';
+        return;
+      }
+
+      monitors.forEach((site) => {
+        const siteDiv = document.createElement('div');
+        siteDiv.className = 'site';
+
+        // Meta 信息
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'meta';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'name';
+        nameSpan.innerHTML = site.name;
+        metaDiv.appendChild(nameSpan);
+
+        if (ShowLink) {
+          const linkA = document.createElement('a');
+          linkA.className = 'link';
+          linkA.href = site.url;
+          linkA.target = '_blank';
+          linkA.textContent = site.name;
+          metaDiv.appendChild(linkA);
+        }
+
+        const statusSpan = document.createElement('span');
+        statusSpan.className = `status ${site.status}`;
+        statusSpan.textContent = statusText[site.status];
+        metaDiv.appendChild(statusSpan);
+
+        siteDiv.appendChild(metaDiv);
+
+        // Timeline
+        const timelineDiv = document.createElement('div');
+        timelineDiv.className = 'timeline';
+
+        site.daily.forEach((data, index) => {
+          let status = '';
+          let text = dayjs.format(data.date, 'YYYY-MM-DD ');
+          
+          if (data.uptime >= 100) {
+            status = 'ok';
+            text += `可用率 ${formatNumber(data.uptime)}%`;
+          } else if (data.uptime <= 0 && data.down.times === 0) {
+            status = 'none';
+            text += '无数据';
+          } else {
+            status = 'down';
+            text += `故障 ${data.down.times} 次，累计 ${formatDuration(data.down.duration)}，可用率 ${formatNumber(data.uptime)}%`;
+          }
+
+          const dayBlock = document.createElement('i');
+          dayBlock.className = status;
+          dayBlock.setAttribute('data-tip', text);
+          timelineDiv.appendChild(dayBlock);
+        });
+
+        siteDiv.appendChild(timelineDiv);
+
+        // Summary
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'summary';
+
+        const todaySpan = document.createElement('span');
+        todaySpan.textContent = '今天';
+        summaryDiv.appendChild(todaySpan);
+
+        const statsSpan = document.createElement('span');
+        if (site.total.times) {
+          statsSpan.textContent = `最近 ${CountDays} 天故障 ${site.total.times} 次，累计 ${formatDuration(site.total.duration)}，平均可用率 ${site.average}%`;
+        } else {
+          statsSpan.textContent = `最近 ${CountDays} 天可用率 ${site.average}%`;
+        }
+        summaryDiv.appendChild(statsSpan);
+
+        const lastDateSpan = document.createElement('span');
+        lastDateSpan.textContent = dayjs.format(site.daily[site.daily.length - 1].date, 'YYYY-MM-DD');
+        summaryDiv.appendChild(lastDateSpan);
+
+        siteDiv.appendChild(summaryDiv);
+        uptimeContainer.appendChild(siteDiv);
+      });
+
+      // 添加 tooltip 事件
+      setupTooltips();
+    }
+
+    // Tooltip 功能
+    function setupTooltips() {
+      const tooltip = document.getElementById('tooltip');
+      const timelineBlocks = document.querySelectorAll('.timeline i');
+
+      timelineBlocks.forEach(block => {
+        block.addEventListener('mouseenter', (e) => {
+          const tipText = block.getAttribute('data-tip');
+          tooltip.textContent = tipText;
+          tooltip.style.display = 'block';
+        });
+
+        block.addEventListener('mousemove', (e) => {
+          tooltip.style.left = (e.pageX + 10) + 'px';
+          tooltip.style.top = (e.pageY - 30) + 'px';
+        });
+
+        block.addEventListener('mouseleave', () => {
+          tooltip.style.display = 'none';
+        });
+      });
+    }
+
+    // 初始化
+    async function init() {
+      // 设置标题
+      document.title = window.Config.SiteName;
+      document.querySelector('.logo').textContent = window.Config.SiteName;
+
+      // 渲染导航
+      const naviContainer = document.querySelector('.navi');
+      window.Config.Navi.forEach(item => {
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.target = '_blank';
+        link.textContent = item.text;
+        naviContainer.appendChild(link);
+      });
+
+      // 获取并渲染监控数据
+      const apikeys = Array.isArray(window.Config.ApiKeys) 
+        ? window.Config.ApiKeys 
+        : [window.Config.ApiKeys];
+
+      for (const apikey of apikeys) {
+        const monitors = await getMonitors(apikey, window.Config.CountDays);
+        renderMonitors(monitors);
+      }
+    }
+
+    // 页面加载完成后初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+
+  <!-- Analytics -->
+  <script src="https://app.rybbit.io/api/script.js" data-site-id="801" defer></script>
+</body>
+</html>
